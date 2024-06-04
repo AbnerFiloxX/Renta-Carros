@@ -6,7 +6,6 @@
     <title>Renta de Carros</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
     <div class="container">
@@ -84,21 +83,21 @@
             <div class="col-md-6 h-100">
                 <div class="container mt-5 h-100">
                     <div id="carousel-img" class="carousel slide h-100" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="./imagenes/imagen1.jpg" class="d-block w-100 h-100 carousel-img" alt="Imagen 1">
+                        <div class="carousel-inner h-100">
+                            <div class="carousel-item active h-100">
+                                <img src="./imagenes/imagen1.jpg" class="d-block w-100 h-100" alt="Imagen 1">
                             </div>
-                            <div class="carousel-item">
-                                <img src="./imagenes/imagen2.jpg" class="d-block w-100 h-100 carousel-img" alt="Imagen 2">
+                            <div class="carousel-item h-100">
+                                <img src="./imagenes/imagen2.jpg" class="d-block w-100 h-100" alt="Imagen 2">
                             </div>
-                            <div class="carousel-item">
-                                <img src="./imagenes/imagen3.jpg" class="d-block w-100 h-100 carousel-img" alt="Imagen 3">
+                            <div class="carousel-item h-100">
+                                <img src="./imagenes/imagen3.jpg" class="d-block w-100 h-100" alt="Imagen 3">
                             </div>
-                            <div class="carousel-item">
-                                <img src="./imagenes/imagen4.jpg" class="d-block w-100 h-100 carousel-img" alt="Imagen 4">
+                            <div class="carousel-item h-100">
+                                <img src="./imagenes/imagen4.jpg" class="d-block w-100 h-100" alt="Imagen 4">
                             </div>
-                            <div class="carousel-item">
-                                <img src="./imagenes/imagen5.jpg" class="d-block w-100 h-100 carousel-img" alt="Imagen 5">
+                            <div class="carousel-item h-100">
+                                <img src="./imagenes/imagen5.jpg" class="d-block w-100 h-100" alt="Imagen 5">
                             </div>
                             <!-- Agrega más imágenes aquí -->
                         </div>
@@ -108,62 +107,81 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-    
-            $('#carousel-img').carousel({
-                interval: 3000 // Cambia de imagen cada 3 segundos
-            });
-    
-            $('#formLogin').submit(function(e) {
-                e.preventDefault();
-                $.post('login.php', $(this).serialize(), function(response) {
-                    if (response === 'Inicio de sesión exitoso') {
-                        $('#login').hide();
-                        $('#registroBtnContainer').hide();
-                        $('#tabsContainer').show();
-                        cargarCarros();
-                    } else {
-                        alert(response);
-                    }
-                });
-            });
-    
-            function cargarCarros() {
-                $.getJSON('carros_disponibles.php', function(data) {
-                    $('#carros').empty();
-                    $.each(data, function(key, entry) {
-                        $('#carros').append($('<option></option>').attr('value', entry.id).text(entry.modelo + ' - $' + entry.costo_por_dia + ' por día'));
-                    });
-                });
-            }
+    <!-- Modal para mostrar el costo total -->
+    <div class="modal fade" id="costoTotalModal" tabindex="-1" aria-labelledby="costoTotalModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="costoTotalModalLabel">Costo Total</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="costoTotalMensaje"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
 
-            $('#formRenta').submit(function(e) {
-                e.preventDefault();
-                $.post('rentar_carro.php', $(this).serialize(), function(response) {
-                    var idRenta = response.split(':')[1].trim();
-                    alert('Renta registrada exitosamente, ID: ' + idRenta);
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#carousel-img').carousel({
+            interval: 3000 // Cambia de imagen cada 3 segundos
+        });
+
+        $('#formLogin').submit(function(e) {
+            e.preventDefault();
+            $.post('login.php', $(this).serialize(), function(response) {
+                if (response === 'Inicio de sesión exitoso') {
+                    $('#login').hide();
+                    $('#registroBtnContainer').hide();
+                    $('#tabsContainer').show();
                     cargarCarros();
+                } else {
+                    alert(response);
+                }
+            });
+        });
+
+        function cargarCarros() {
+            $.getJSON('carros_disponibles.php', function(data) {
+                $('#carros').empty();
+                $.each(data, function(key, entry) {
+                    $('#carros').append($('<option></option>').attr('value', entry.id).text(entry.modelo + ' - $' + entry.costo_por_dia + ' por día'));
                 });
             });
+        }
 
-            $('#formDevolucion').submit(function(e) {
-                e.preventDefault();
-                $.post('devolver_carro.php', $(this).serialize(), function(response) {
-                    $('#costoTotalMensaje').text(response);
-                    $('#costoTotalModal').modal('show');
+        $('#formRenta').submit(function(e) {
+            e.preventDefault();
+            $.post('rentar_carro.php', $(this).serialize(), function(response) {
+                alert(response);
+                cargarCarros();
+            });
+        });
 
-                    // Se activa solo cuando se presiona el botón "OK" en el modal
-                    $('#costoTotalModal').on('hidden.bs.modal', function(e) {
-                        // Recargar la página después de 1 segundo
-                        location.reload();
-                    });
+        $('#formDevolucion').submit(function(e) {
+            e.preventDefault();
+            $.post('devolver_carro.php', $(this).serialize(), function(response) {
+                $('#costoTotalMensaje').text(response);
+                $('#costoTotalModal').modal('show');
+
+                // Se activa solo cuando se presiona el botón "OK" en el modal
+                $('#costoTotalModal').on('hidden.bs.modal', function(e) {
+                    // Recargar la página después de 1 segundo
+                    location.reload();
                 });
             });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
 
